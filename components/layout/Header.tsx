@@ -18,6 +18,7 @@ import {
 } from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
 import classes from './header.module.css';
+import Link from "next/link";
 
 interface LinkProps {
     icon: Icon;
@@ -132,7 +133,9 @@ export function CustomHeader() {
                     </Group>
 
                     <Group visibleFrom="sm">
-                        <Button variant="default">Log in</Button>
+                        <Link href="/auth/Login" passHref>
+                            <Button variant="default">Log in</Button>
+                        </Link>
                         <Button>Sign up</Button>
                     </Group>
 
@@ -173,7 +176,9 @@ export function CustomHeader() {
                     <Divider my="sm"/>
 
                     <Group justify="center" grow pb="xl" px="md">
-                        <Button variant="default">Log in</Button>
+                        <Link href="/auth/Login" passHref>
+                            <Button variant="default">Log in</Button>
+                        </Link>
                         <Button>Sign up</Button>
                     </Group>
                 </ScrollArea>

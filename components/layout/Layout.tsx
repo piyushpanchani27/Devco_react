@@ -1,24 +1,33 @@
-import { AppShell, Burger, Group, UnstyledButton } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { ReactNode } from 'react';
+import {AppShell, UnstyledButton} from '@mantine/core';
+import {useDisclosure} from '@mantine/hooks';
+import {ReactNode} from 'react';
+import {useRouter} from 'next/router';
 import classes from './layout.module.css';
-import {CustomHeader} from "./Header";
+import {CustomHeader} from './Header';
 
 interface LayoutProps {
     children: ReactNode;
 }
 
-export function Layout({ children }: LayoutProps) {
-    const [opened, { toggle }] = useDisclosure();
+const authRoutes = ['/auth/Login', '/auth/Signup']; // Add your authentication routes here
+
+export function Layout({children}: LayoutProps) {
+    const [opened, {toggle}] = useDisclosure();
+    const router = useRouter();
+    const isAuthRoute = authRoutes.includes(router.pathname);
+
+    if (isAuthRoute) {
+        return <>{children}</>;
+    }
 
     return (
         <AppShell
-            header={{ height: 100 }}
-            navbar={{ width: 300, breakpoint: 'sm', collapsed: { desktop: true, mobile: !opened } }}
+            header={{height: 100}}
+            navbar={{width: 300, breakpoint: 'sm', collapsed: {desktop: true, mobile: !opened}}}
             padding="md"
         >
             <AppShell.Header>
-               <CustomHeader/>
+                <CustomHeader/>
             </AppShell.Header>
 
             <AppShell.Navbar py="md" px={4}>

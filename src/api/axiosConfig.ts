@@ -2,8 +2,10 @@ import axios from 'axios';
 import {getDefaultStore} from 'jotai';
 import {tokenAtom} from '../atoms/authAtoms';
 
+// Your base API URL
 const BASE_URL = 'https://devco.elulastage.space/api';
 
+// Axios instance
 const apiClient = axios.create({
     baseURL: BASE_URL,
     headers: {
@@ -11,19 +13,34 @@ const apiClient = axios.create({
     },
 });
 
-// Jotai store for accessing token atom
+// Access the Jotai store
 const store = getDefaultStore();
 
-// Add request interceptor to inject the token
+// Request interceptor to inject the token
 apiClient.interceptors.request.use(
     (config) => {
-        const token = store.get(tokenAtom); // Get token from Jotai
+        const token = store.get(tokenAtom);
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
     (error) => Promise.reject(error)
+);
+
+// Response interceptor to handle 401 errors
+apiClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            // Clear token on 401 error
+            store.set(tokenAtom, null);
+
+            // Redirect to login page
+            window.location.href = '/auth/Login'; // Ensure this matches your login route
+        }
+        return Promise.reject(error);
+    }
 );
 
 export default apiClient;
