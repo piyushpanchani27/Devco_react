@@ -13,6 +13,7 @@
     "@mantine/core": "7.14.3",
     "@mantine/hooks": "7.14.3",
     "@tabler/icons-react": "^3.24.0",
+    "axios": "^1.7.9",
     "jotai": "^2.10.3",
     "next": "15.0.1",
     "react": "18.3.1",

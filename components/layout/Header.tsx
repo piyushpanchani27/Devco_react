@@ -46,7 +46,7 @@ const BidsLinks: LinkProps[] = [
     },
     {
         icon: IconHistory,
-        title: 'Past auctions',
+        title: 'Past bids',
         description: 'View all your bids from past auctions.',
     },
 
