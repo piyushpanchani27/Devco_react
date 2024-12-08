@@ -1,8 +1,9 @@
 import {atom} from 'jotai';
+import {atomWithStorage} from 'jotai/utils';
 import {updateLotAtom} from "./lotsAtoms";
 import {Lot} from "../../lib/types";
 
-export const websocketAtom = atom<WebSocket | null>(null);
+export const websocketAtom = atomWithStorage<WebSocket | null>('websocket', null);
 
 export const handleWebSocketMessageAtom = atom(
     null,

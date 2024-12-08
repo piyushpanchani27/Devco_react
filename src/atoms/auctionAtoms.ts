@@ -1,10 +1,11 @@
 import {atom} from 'jotai';
+import {atomWithStorage} from 'jotai/utils';
 import {Auction} from "../../lib/types";
 
 // Atom to store all auctions categorized by type
-export const auctionsAtom = atom({
-    live: [] as Auction[],
-    past: [] as Auction[],
+export const auctionsAtom = atomWithStorage<{ live: Auction[]; past: Auction[] }>('auctions', {
+    live: [],
+    past: [],
 });
 
 // Derived atom to get live auctions

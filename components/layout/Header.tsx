@@ -19,6 +19,8 @@ import {
 import {useDisclosure} from '@mantine/hooks';
 import classes from './header.module.css';
 import Link from "next/link";
+import {useAtom} from "jotai";
+import {userAtom} from "../../src/atoms/userAtoms";
 
 interface LinkProps {
     icon: Icon;
@@ -54,6 +56,8 @@ const BidsLinks: LinkProps[] = [
 ];
 
 export function CustomHeader() {
+    const [user] = useAtom(userAtom)
+
     const [drawerOpened, {toggle: toggleDrawer, close: closeDrawer}] = useDisclosure(false);
     const [linksOpened, {toggle: toggleLinks}] = useDisclosure(false);
     const theme = useMantineTheme();
@@ -136,7 +140,8 @@ export function CustomHeader() {
                         <Link href="/auth/Login" passHref>
                             <Button variant="default">Log in</Button>
                         </Link>
-                        <Button>Sign up</Button>
+                        <Button>  {user?.username}</Button>
+
                     </Group>
 
                     <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm"/>

@@ -1,7 +1,8 @@
 import {atom} from 'jotai';
+import {atomWithStorage} from 'jotai/utils';
 import {Lot} from "../../lib/types";
 
-export const lotsAtom = atom<Record<number, Lot[]>>({});
+export const lotsAtom = atomWithStorage<Record<number, Lot[]>>('lots', {});
 
 export const lotsByAuctionAtom = atom((get) => (auctionId: number) =>
     get(lotsAtom)[auctionId] || []
