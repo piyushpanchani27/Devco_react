@@ -11,7 +11,7 @@ export function LoginComponent() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showAnimation, setShowAnimation] = useState(false);
-    const [stepText, setStepText] = useState('Welcome to Devco'); // Initial message
+    const [stepText, setStepText] = useState('Welcome to Devco...'); // Initial message
 
     const form = useForm({
         initialValues: {
@@ -49,7 +49,6 @@ export function LoginComponent() {
 
     const startTextRotation = () => {
         const messages = [
-            'Welcome to Devco...',
             'Loading your profile...',
             'Preparing auctions and lots...',
         ];
