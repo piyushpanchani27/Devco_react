@@ -63,6 +63,7 @@ export interface Auction {
     anti_secounds: number | null;
     is_auction_registered: boolean;
     auction_registration_status?: string; // Only in past auctions
+    lots: number;
 }
 
 

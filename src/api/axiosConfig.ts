@@ -3,7 +3,8 @@ import {getDefaultStore} from 'jotai';
 import {tokenAtom} from '../atoms/authAtoms';
 
 // Your base API URL
-const BASE_URL = 'https://devco.elulastage.space/api';
+//const BASE_URL = 'https://devco.elulastage.space/api';
+const BASE_URL = 'http://127.0.0.1:8000/api';
 
 // Axios instance
 const apiClient = axios.create({

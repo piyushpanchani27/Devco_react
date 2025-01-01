@@ -1,20 +1,24 @@
-import {Grid} from "@mantine/core";
+import {Center, Stack} from "@mantine/core";
 import {useAtom} from "jotai";
 import {pageTitleAtom} from "../../src/atoms/stateAtoms";
 import {useEffect} from "react";
-import CountdownTimer from "../../components/common/CountdownTimer";
+import AuctionCard from "../../components/auction/AuctionCard";
+import {liveAuctionsAtom} from "../../src/atoms/auctionAtoms";
 
 export default function UpcomingAuctions() {
     const [, setPageTitle] = useAtom(pageTitleAtom)
+    const [auctions] = useAtom(liveAuctionsAtom)
 
     useEffect(() => {
         setPageTitle('Upcoming Auctions')
     })
 
     return (
-        <Grid>
-            <CountdownTimer timestamp={Date.now() + 10000000000} completedComponent={<>Complete</>}/>
-        </Grid>
+        <Stack>
+            {
+                auctions.map((auction, index) => <Center><AuctionCard key={index} auction={auction}/></Center>)
+            }
+        </Stack>
 
     );
 }

@@ -3,6 +3,7 @@ import Head from "next/head";
 import {MantineProvider} from "@mantine/core";
 import {theme} from "../theme";
 import {Layout} from "../components/layout/Layout";
+import '@mantine/dates/styles.css';
 
 export default function App({Component, pageProps}: any) {
     return (
