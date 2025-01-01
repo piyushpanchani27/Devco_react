@@ -26,11 +26,13 @@ import {useAtom} from "jotai";
 import {userAtom} from "../../src/atoms/userAtoms";
 import {UserMenu} from "./UserMenu";
 import {pageTitleAtom} from "../../src/atoms/stateAtoms";
+import {useRouter} from 'next/router';
 
 interface LinkProps {
     icon: Icon;
     title: string;
     description: string;
+    url?: string;
 }
 
 const AuctionLinks: LinkProps[] = [
@@ -38,11 +40,13 @@ const AuctionLinks: LinkProps[] = [
         icon: IconAlarmPlus,
         title: 'Upcoming auctions',
         description: 'View all upcoming auctions.',
+        url: '/UpcomingAuctions'
     },
     {
         icon: IconHistory,
         title: 'Past auctions',
         description: 'View all past auctions.',
+        url: '/PastAuctions'
     },
 
 ];
@@ -69,9 +73,14 @@ export function CustomHeader() {
     const [linksOpened, {toggle: toggleLinks}] = useDisclosure(false);
     const theme = useMantineTheme();
 
+    const router = useRouter();
     const getLinks = (links: LinkProps[]) => {
         return links.map((item) => (
-            <UnstyledButton className={classes.subLink} key={item.title}>
+            <UnstyledButton onClick={() => {
+                if (item.url) {
+                    router.push(item.url);
+                }
+            }} className={classes.subLink} key={item.title}>
                 <Group wrap="nowrap" align="flex-start">
                     <ThemeIcon size={34} variant="default" radius="md">
                         <item.icon size={22} color={theme.colors.blue[6]}/>
