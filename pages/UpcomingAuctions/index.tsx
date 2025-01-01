@@ -2,6 +2,7 @@ import {Grid} from "@mantine/core";
 import {useAtom} from "jotai";
 import {pageTitleAtom} from "../../src/atoms/stateAtoms";
 import {useEffect} from "react";
+import CountdownTimer from "../../components/common/CountdownTimer";
 
 export default function UpcomingAuctions() {
     const [, setPageTitle] = useAtom(pageTitleAtom)
@@ -11,7 +12,9 @@ export default function UpcomingAuctions() {
     })
 
     return (
-        <Grid></Grid>
+        <Grid>
+            <CountdownTimer timestamp={Date.now() + 10000} completedComponent={<>Complete</>}/>
+        </Grid>
 
     );
 }
