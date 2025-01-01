@@ -13,7 +13,7 @@ export default function UpcomingAuctions() {
 
     return (
         <Grid>
-            <CountdownTimer timestamp={Date.now() + 10000} completedComponent={<>Complete</>}/>
+            <CountdownTimer timestamp={Date.now() + 10000000000} completedComponent={<>Complete</>}/>
         </Grid>
 
     );

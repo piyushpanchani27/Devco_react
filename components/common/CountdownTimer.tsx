@@ -5,7 +5,7 @@ import {ReactElement} from "react";
 const getBadge = (value: number, label?: string) => {
     return <Stack>
         <Center>
-            <Badge variant="outline" size="lg" radius={"xs"}>{value}</Badge>
+            <Badge h={45} miw={45} variant="outline" size="12" radius={"xs"}>{value}</Badge>
         </Center>
         <Center>
             <Text c={'dimmed'} fz={"xs"} mt={-15}>{label}</Text>
