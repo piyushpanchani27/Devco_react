@@ -6,6 +6,7 @@ import cx from 'clsx';
 import classes from './UserMenu.module.css';
 import {useAtom} from "jotai";
 import {userAtom} from "../../src/atoms/userAtoms";
+import {useSignOut} from "../../src/hooks/useSignOut";
 
 
 export function UserMenu() {
@@ -13,6 +14,12 @@ export function UserMenu() {
     const theme = useMantineTheme();
     const [opened, {toggle}] = useDisclosure(false);
     const [userMenuOpened, setUserMenuOpened] = useState(false);
+    const signOut = useSignOut();
+
+    const handleLogout = () => {
+        signOut(); // Perform sign-out
+        window.location.href = '/auth/Login'; // Redirect to login page
+    };
     return <Menu
         width={260}
         position="bottom-end"
@@ -39,7 +46,7 @@ export function UserMenu() {
             <Menu.Item leftSection={<IconSettings size={16} stroke={1.5}/>}>
                 Account settings
             </Menu.Item>
-            <Menu.Item leftSection={<IconLogout size={16} stroke={1.5}/>}>Logout</Menu.Item>
+            <Menu.Item onClick={handleLogout} leftSection={<IconLogout size={16} stroke={1.5}/>}>Logout</Menu.Item>
 
         </Menu.Dropdown>
     </Menu>
