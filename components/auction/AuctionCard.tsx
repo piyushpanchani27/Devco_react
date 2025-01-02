@@ -12,7 +12,7 @@ export default function AuctionCard({auction}: { auction: Auction }) {
                         <Center>
                             <Badge size={'14'} w={65} h={48} radius={0}
                                    color={badgeColor}>{date.format('DD')}</Badge>
-                            <Badge size={'12'} w={60} h={48} radius={0}
+                            <Badge size={'12'} w={70} h={48} radius={0}
                                    color="gray.4">
                                 <Stack>
                                     <Text c={'gray.7'} fw={800}
@@ -45,7 +45,8 @@ export default function AuctionCard({auction}: { auction: Auction }) {
                         <Text c={'gray.6'} fw={500} size="xs">{auction.description}</Text>
                         <Text c={'gray.7'} fw={500} size="xs">Ends
                             : {dayjs(auction.ends).format('MMM DD, YYYY HH:mm a')}</Text>
-                        <CountdownTimer timestamp={Date.now() + 10000000000} completedComponent={<>Complete</>}/>
+                        <CountdownTimer timestamp={dayjs(auction.ends).unix() * 1000}
+                                        completedComponent={<Text c={'red.5'} fw={700} fz={'15'}>Closed</Text>}/>
                     </Stack>
                 </Grid.Col>
                 <Grid.Col span={4}>

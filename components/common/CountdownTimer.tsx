@@ -1,6 +1,7 @@
 import Countdown from "react-countdown";
 import {Badge, Center, Group, Stack, Text} from "@mantine/core";
 import {ReactElement} from "react";
+import dayjs from "dayjs";
 
 const getBadge = (value: number, label?: string) => {
     return <Stack>
@@ -28,7 +29,7 @@ export default function CountdownTimer({timestamp, completedComponent}: {
             // Render a completed state
             return completedComponent;
         } else {
-            const d = Math.floor(hours / 24);
+            const d = dayjs(timestamp).diff(dayjs(), 'days');
             const h = hours % 24;
             return <Group>
                 {getBadge(d, 'Days')}
@@ -41,7 +42,7 @@ export default function CountdownTimer({timestamp, completedComponent}: {
 
     return (
         <div>
-            <Countdown renderer={renderer} date={timestamp}/>
+            <Countdown daysInHours={false} renderer={renderer} date={timestamp}/>
         </div>
     );
 }

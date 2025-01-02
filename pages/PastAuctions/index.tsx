@@ -1,17 +1,24 @@
-import {Grid} from "@mantine/core";
+import {Center, Stack} from "@mantine/core";
 import {useAtom} from "jotai";
 import {pageTitleAtom} from "../../src/atoms/stateAtoms";
 import {useEffect} from "react";
+import {pastAuctionsAtom} from "../../src/atoms/auctionAtoms";
+import AuctionCard from "../../components/auction/AuctionCard";
 
 export default function PastAuctions() {
     const [, setPageTitle] = useAtom(pageTitleAtom)
+    const [auctions] = useAtom(pastAuctionsAtom)
 
     useEffect(() => {
         setPageTitle('Past Auctions')
     })
 
     return (
-        <Grid></Grid>
+        <Stack>
+            {
+                auctions.map((auction, index) => <Center><AuctionCard key={index} auction={auction}/></Center>)
+            }
+        </Stack>
 
     );
 }
