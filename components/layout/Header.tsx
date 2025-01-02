@@ -210,10 +210,10 @@ export function CustomHeader() {
                     </ScrollArea>
                 </Drawer>
             </Box>
-            <Box pl={10} mt={-17} bg="gray.2" h={60}>
-                <Grid align={'center'} h={60}>
+            <Box pl={10} mt={-17} bg="gray.2" h={80}>
+                <Grid align={'center'} h={80}>
                     <Grid.Col span={4}>
-                        <Flex h={60} align="center">
+                        <Flex h={80} align="center">
                             <Text c={'primary.9'} fz={"h5"} fw={700}>{pageTitle}</Text>
                         </Flex>
                     </Grid.Col>
