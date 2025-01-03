@@ -6,9 +6,9 @@ import dayjs from "dayjs";
 
 export default function LotCard({lot}: { lot: Lot }) {
     return (
-        <Paper withBorder>
+        <Paper mb={10} withBorder>
             <Group>
-                <Box w={60} h={200} bg={'primary.9'}>
+                <Box w={60} h={'100%'} bg={'primary.9'}>
                     <Stack>
                         <Flex justify={"center"}>
                             <Text fw={600} c={'white'}>LOT</Text>
@@ -22,7 +22,7 @@ export default function LotCard({lot}: { lot: Lot }) {
                     <Image mt={-20} w={200} src={lot.image[0]} alt={lot.title}/>
                 </Center>
 
-                <Stack w={200} p={10} h={200}>
+                <Stack w={200} p={10}>
                     <Group>
                         <ActionIcon variant="transparent" aria-label="Settings">
                             <IconStar style={{width: '70%', height: '70%'}} stroke={1.5}/>

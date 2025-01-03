@@ -3,7 +3,7 @@ import {useAtom} from "jotai";
 import {pageTitleAtom} from "../../src/atoms/stateAtoms";
 import {useEffect} from "react";
 import {pastAuctionsAtom} from "../../src/atoms/auctionAtoms";
-import AuctionCard from "../../components/auction/AuctionCard";
+import PastAuctionCard from "../../components/auction/PastAuctionCard";
 
 export default function PastAuctions() {
     const [, setPageTitle] = useAtom(pageTitleAtom)
@@ -18,7 +18,7 @@ export default function PastAuctions() {
             {
                 auctions.map((auction, index) =>
                     <Center key={index}>
-                        <AuctionCard auction={auction}/>
+                        <PastAuctionCard auction={auction}/>
                     </Center>)
             }
         </Stack>
