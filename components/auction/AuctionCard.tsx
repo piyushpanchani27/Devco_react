@@ -1,8 +1,9 @@
-import {Badge, Flex, Grid, Paper, Stack, Text} from "@mantine/core";
+import {Badge, Button, Flex, Grid, Paper, Stack, Text} from "@mantine/core";
 import CountdownTimer from "../common/CountdownTimer";
 import {Auction} from "../../lib/types";
 import dayjs, {Dayjs} from "dayjs";
 import DateBadge from "../common/DateBadge";
+import Link from "next/link";
 
 
 export default function AuctionCard({auction}: { auction: Auction }) {
@@ -33,7 +34,10 @@ export default function AuctionCard({auction}: { auction: Auction }) {
                         {getDateLabel(dayjs(auction.starts), 'Starting Date', 'green')}
                         {getDateLabel(dayjs(auction.ends), 'Ending Date', 'primary.7')}
                         <Flex justify={'flex-end'}>
-                            <Badge color={'gray.7'} radius={0} h={50} size={'lg'}>{auction.lots} Lots</Badge>
+                            <Link href={`/UpcomingAuctions/${auction.id}/Lots`} passHref>
+                                <Button color={'gray.7'} radius={0} h={50}
+                                        size={'lg'}>{auction.lots} Lots</Button>
+                            </Link>
                         </Flex>
                     </Stack>
                 </Grid.Col>

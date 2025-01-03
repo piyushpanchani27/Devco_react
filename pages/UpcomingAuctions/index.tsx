@@ -16,7 +16,10 @@ export default function UpcomingAuctions() {
     return (
         <Stack>
             {
-                auctions.map((auction, index) => <Center><AuctionCard key={index} auction={auction}/></Center>)
+                auctions.map((auction, index) =>
+                    <Center key={index}>
+                        <AuctionCard auction={auction}/>
+                    </Center>)
             }
         </Stack>
 

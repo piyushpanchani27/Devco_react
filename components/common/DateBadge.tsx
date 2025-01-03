@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
 import {Badge, Center, Grid, Paper, Stack, Text} from "@mantine/core";
 
-export default function DateBadge(props: { color: string, date: dayjs.Dayjs, label: string }) {
-    return <Paper p={5} h={60} shadow={"none"} withBorder radius={0}>
+export default function DateBadge(props: { color: string, date: dayjs.Dayjs, label?: string }) {
+    return <Paper p={5} h={60} shadow={"none"} withBorder={!!props.label} radius={0}>
         <Grid>
-            <Grid.Col span={5}>
+            <Grid.Col span={props.label ? 5 : 12}>
                 <Center>
                     <Badge size={"14"} w={65} h={48} radius={0}
                            color={props.color}>{props.date.format("DD")}</Badge>
@@ -20,11 +20,14 @@ export default function DateBadge(props: { color: string, date: dayjs.Dayjs, lab
                 </Center>
 
             </Grid.Col>
-            <Grid.Col span={7}>
-                <Center h={50}>
-                    <Text fw={800} fz={15} c={"gray.6"}>{props.label}</Text>
-                </Center>
-            </Grid.Col>
+            {props.label &&
+                <Grid.Col span={7}>
+                    <Center h={50}>
+                        <Text fw={800} fz={15} c={"gray.6"}>{props.label}</Text>
+                    </Center>
+                </Grid.Col>
+            }
+
         </Grid>
     </Paper>;
 }
