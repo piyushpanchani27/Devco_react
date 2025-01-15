@@ -27,7 +27,7 @@ export const useInitializeApp = () => {
         // Fetch lots for each live auction
         await Promise.all(
             liveAuctions.map(async (auction: Auction) => {
-                const lots = await fetchLotsForAuction(auction.id);
+                const lots = await fetchLotsForAuction(auction.id, 1, 100);
                 addLots({auctionId: auction.id, lots});
             })
         );

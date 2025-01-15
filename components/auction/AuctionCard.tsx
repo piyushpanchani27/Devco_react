@@ -1,9 +1,11 @@
-import {Badge, Button, Flex, Grid, Paper, Stack, Text} from "@mantine/core";
+import {Badge, Button, Flex, Grid, Modal, Paper, Stack, Text} from "@mantine/core";
 import CountdownTimer from "../common/CountdownTimer";
 import {Auction} from "../../lib/types";
 import dayjs, {Dayjs} from "dayjs";
 import DateBadge from "../common/DateBadge";
 import Link from "next/link";
+import {useState} from "react";
+import AuctionRegistrationForm from "./AuctionRegistrationForm";
 
 
 export default function AuctionCard({auction}: { auction: Auction }) {
@@ -11,6 +13,8 @@ export default function AuctionCard({auction}: { auction: Auction }) {
         return (
             <DateBadge color={badgeColor} date={date} label={label}/>)
     }
+
+    const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
     return (
         <Paper withBorder shadow="xs" p="xl">
@@ -34,15 +38,25 @@ export default function AuctionCard({auction}: { auction: Auction }) {
                         {getDateLabel(dayjs(auction.starts), 'Starting Date', 'green')}
                         {getDateLabel(dayjs(auction.ends), 'Ending Date', 'primary.7')}
                         <Flex justify={'flex-end'}>
+                            {
+                                !auction.is_auction_registered &&
+                                <Button onClick={() => setShowRegistrationModal(true)} mr={10}
+                                        color={'primary.9'} radius={'sm'} h={50}>REGISTER TO BID</Button>
+                            }
                             <Link href={`/UpcomingAuctions/${auction.id}/Lots`} passHref>
-                                <Button color={'gray.7'} radius={0} h={50}
-                                        size={'lg'}>{auction.lots} Lots</Button>
+                                <Button color={'gray.7'} radius={'sm'} h={50}
+                                >{auction.lots} Lots</Button>
                             </Link>
                         </Flex>
                     </Stack>
                 </Grid.Col>
             </Grid>
-
+            <Modal size={800} title={`${auction.auction_type} | ${auction.title}`} opened={showRegistrationModal}
+                   onClose={() => {
+                       setShowRegistrationModal(false)
+                   }}>`
+                <AuctionRegistrationForm auction={auction}/>
+            </Modal>
         </Paper>
 
     )
