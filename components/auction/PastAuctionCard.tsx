@@ -15,10 +15,10 @@ export default function PastAuctionCard({auction}: { auction: Auction }) {
     return (
         <Paper withBorder shadow="xs" p="xl">
             <Grid w={1000}>
-                <Grid.Col span={3}>
-                    <img height={200} src={auction.image} alt={auction.title}/>
+                <Grid.Col span={4}>
+                    <img width={256} src={auction.image} alt={auction.title}/>
                 </Grid.Col>
-                <Grid.Col span={5}>
+                <Grid.Col span={4}>
                     <Stack>
                         <Text c={'gray.7'} fw={700} size="xl">{auction.title}</Text>
                         <Text c={'gray.6'} fw={500} size="xs">{auction.description}</Text>
