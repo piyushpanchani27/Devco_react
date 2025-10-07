@@ -17,7 +17,8 @@ if (!PORT) {
   process.exit(1);
 }
 
-const FFMPEG_PATH = process.env.FFMPEG_PATH || "ffmpeg";
+const FFMPEG_PATH = process.env.FFMPEG_PATH || '/usr/bin/ffmpeg';
+
 
 console.log("Port:", PORT);
 console.log("FFmpeg path:", FFMPEG_PATH);
