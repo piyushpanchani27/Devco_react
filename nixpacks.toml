@@ -1,5 +1,8 @@
 [phases.setup]
-aptPkgs = ["ffmpeg"]
- 
+nixPkgs = ['nodejs_20', 'ffmpeg-full']
+
+[phases.build]
+cmds = ['npm install', 'npm run build']
+
 [start]
-cmd = "node server.js"
+cmd = 'node dist/server.js'
