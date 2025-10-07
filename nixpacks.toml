@@ -1,8 +1,8 @@
 [phases.setup]
 aptPkgs = ["ffmpeg"]
- 
-[start]
-cmd = "npm run server"
 
 [build]
-command = "npm run build-server && npm run build"
+command = "tsc -p server/tsconfig.server.json && next build"
+
+[start]
+cmd = "node server/dist/server.js"
