@@ -821,7 +821,11 @@ const audioRef = useRef<HTMLAudioElement | null>(null);
   // Connect to WebSocket as listener
   useEffect(() => {
     // const ws = new WebSocket("ws://localhost:8082/?role=listener");
-    const ws = new WebSocket("wss://devcoreact-production.up.railway.app/?role=listener");
+    // const ws = new WebSocket("wss://devcoreact-production.up.railway.app/?role=listener");
+    const ws = new WebSocket(
+      `${process.env.NEXT_PUBLIC_WS_URL}/?role=listener`
+    );
+
     wsRef.current = ws;
  
     ws.onopen = () => {
