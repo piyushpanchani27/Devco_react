@@ -11,7 +11,12 @@ console.log("Node version:", process.version);
 console.log("Environment:", process.env.NODE_ENV);
 console.log("CWD:", process.cwd());
  
-const PORT = Number(process.env.PORT || 8082);
+const PORT = Number(process.env.PORT);
+if (!PORT) {
+  console.error("❌ No PORT provided. Railway must set process.env.PORT");
+  process.exit(1);
+}
+
 const FFMPEG_PATH = process.env.FFMPEG_PATH || "ffmpeg";
 
 console.log("Port:", PORT);
