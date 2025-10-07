@@ -175,9 +175,6 @@
 //   stopFFmpeg();
 //   server.close(() => process.exit(0));
 // });
-
-
-
 import { WebSocket, WebSocketServer } from "ws";
 import cors from "cors";
 import express from "express";
@@ -191,11 +188,7 @@ console.log("Node version:", process.version);
 console.log("Environment:", process.env.NODE_ENV);
 console.log("CWD:", process.cwd());
  
-const PORT = Number(process.env.PORT);
-if (!PORT) {
-  console.error("❌ No PORT env variable found! Did you set it?");
-  process.exit(1);
-}
+const PORT = Number(process.env.PORT || 8082);
 const FFMPEG_PATH = process.env.FFMPEG_PATH || "ffmpeg";
 
 console.log("Port:", PORT);
