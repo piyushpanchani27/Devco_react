@@ -20,8 +20,8 @@ export function LoginComponent() {
             rememberMe: false,
         },
         validate: {
-            email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-            password: (value) => (value.length >= 6 ? null : 'Password must be at least 6 characters'),
+            email: (value:string) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+            password: (value:string) => (value.length >= 6 ? null : 'Password must be at least 6 characters'),
         },
     });
 

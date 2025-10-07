@@ -4,10 +4,11 @@ import {pageTitleAtom} from "../../../../src/atoms/stateAtoms";
 import {useEffect} from "react";
 import {useRouter} from "next/router";
 import {liveAuctionsAtom} from "../../../../src/atoms/auctionAtoms";
-import LotsPageHeader from "../../../../components/auction/LotsPageHeader";
+// import LotsPageHeader from "../../../../components/auction/LotsPageHeader";
 import LotsFilterBar from "../../../../components/auction/LotsFilterBar";
 import {lotsByAuctionAtom} from "../../../../src/atoms/lotsAtoms";
 import LotCard from "../../../../components/auction/LotCard";
+import LoginPageHeader from "../../../auction-listener";
 
 export default function LotsPage() {
     const [, setPageTitle] = useAtom(pageTitleAtom)
@@ -28,7 +29,8 @@ export default function LotsPage() {
     return (
         <Center>
             <Stack w={1100}>
-                <LotsPageHeader auction={auction}/>
+                {/* <LotsPageHeader auction={auction}/> */}
+                <LoginPageHeader />
                 <Grid>
                     <Grid.Col span={3}>
                         <LotsFilterBar auction={auction}/>
