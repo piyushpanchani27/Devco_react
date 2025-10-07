@@ -9,31 +9,53 @@ export default function Home() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
-
-      mediaRecorder.ondataavailable = async (event) => {
-        if (event.data.size > 0 && socketRef.current?.readyState === WebSocket.OPEN) {
-          const buffer = await event.data.arrayBuffer();
-          console.log(`Sending ${buffer.byteLength} bytes of data`);
-          socketRef.current.send(buffer);
-        }
-      };
-
-      mediaRecorder.start(1000); // send chunks every second
-      mediaRecorderRef.current = mediaRecorder;
-      setIsRecording(true);
-    } catch (error) {
-      console.error("Error accessing media devices:", error);
+  try {
+    // ADD THIS: Send start signal FIRST
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
+      console.log("📡 Sending START signal");
+      socketRef.current.send(JSON.stringify({ type: "start" }));
     }
-  };
+ 
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+ 
+    mediaRecorder.ondataavailable = async (event) => {
+      if (
+        event.data.size > 0 &&
+        socketRef.current?.readyState === WebSocket.OPEN
+      ) {
+        const buffer = await event.data.arrayBuffer();
+        console.log(`Sending ${buffer.byteLength} bytes of data`);
+        socketRef.current.send(buffer);
+      }
+    };
+ 
+    mediaRecorder.start(1000);
+    mediaRecorderRef.current = mediaRecorder;
+    setIsRecording(true);
+  } catch (error) {
+    console.error("Error accessing media devices:", error);
+  }
+};
+ 
+const stopRecording = () => {
+  mediaRecorderRef.current?.stop();
+  mediaRecorderRef.current = null;
+ 
+  // ADD THIS: Send stop signal
+  if (socketRef.current?.readyState === WebSocket.OPEN) {
+    console.log("📡 Sending STOP signal");
+    socketRef.current.send(JSON.stringify({ type: "stop" }));
+  }
+ 
+  setIsRecording(false);
+};
 
-  const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
-    mediaRecorderRef.current = null;
-    setIsRecording(false);
-  };
+  // const stopRecording = () => {
+  //   mediaRecorderRef.current?.stop();
+  //   mediaRecorderRef.current = null;
+  //   setIsRecording(false);
+  // };
 
   const toggleRecording = () => {
     if (!isRecording) {
@@ -44,12 +66,17 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const socket = new WebSocket(process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8082");
+    // const socket = new WebSocket(process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8082");
+    // const socket = new WebSocket("ws://localhost:8082");
+    const socket = new WebSocket("ws://localhost:8082/?role=broadcaster");
+    // const socket = new WebSocket('wss://your-backend-vercel-url.vercel.app/?role=listener')
     socketRef.current = socket;
 
     socket.onopen = () => {
       console.log("WebSocket connection opened.");
     };
+
+    
 
     socket.onclose = () => {
       console.log("WebSocket connection closed.");
