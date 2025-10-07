@@ -69,9 +69,7 @@ const stopRecording = () => {
     // const socket = new WebSocket(process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8082");
     // const socket = new WebSocket("ws://localhost:8082");
     // const socket = new WebSocket("ws://localhost:8082/?role=broadcaster");
-const socket = new WebSocket(
-  `${process.env.NEXT_PUBLIC_WS_URL}/?role=broadcaster`
-);
+  const socket = new WebSocket("wss://devcoreact-production.up.railway.app/?role=broadcaster");
 
     // const socket = new WebSocket('wss://your-backend-vercel-url.vercel.app/?role=listener')
     socketRef.current = socket;
