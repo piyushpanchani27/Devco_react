@@ -3,3 +3,6 @@ aptPkgs = ["ffmpeg"]
  
 [start]
 cmd = "npm run server"
+
+[build]
+command = "npm run build-server && npm run build"
