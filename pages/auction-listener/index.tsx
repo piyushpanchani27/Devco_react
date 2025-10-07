@@ -821,7 +821,7 @@ const audioRef = useRef<HTMLAudioElement | null>(null);
   // Connect to WebSocket as listener
   useEffect(() => {
     // const ws = new WebSocket("ws://localhost:8082/?role=listener");
-    const ws = new WebSocket("wss://devcoreact-production.up.railway.app/?role=broadcaster");
+    const ws = new WebSocket("wss://devcoreact-production.up.railway.app/?role=listener");
     wsRef.current = ws;
  
     ws.onopen = () => {
@@ -879,7 +879,7 @@ const audioRef = useRef<HTMLAudioElement | null>(null);
     cleanupHLS();
  
     // const hlsUrl = "http://localhost:8082/hls/audio.m3u8";
- const hlsUrl = "https://devco-react-git-backend-piyushs-projects-2d59933e.vercel.app/hls/audio.m3u8";
+const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
     console.log("Loading HLS stream from:", hlsUrl);
  
     if (Hls.isSupported()) {
