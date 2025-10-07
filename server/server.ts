@@ -8,8 +8,8 @@ import { fileURLToPath } from "url";
  
 const PORT = Number(process.env.PORT || 8082);
 // const FFMPEG_PATH = process.env.FFMPEG_PATH || "C:\\ffmpeg\\bin\\ffmpeg.exe";
-const FFMPEG_PATH = process.env.FFMPEG_PATH || "/usr/bin/ffmpeg";
-
+// const FFMPEG_PATH = process.env.FFMPEG_PATH || "/usr/bin/ffmpeg";
+const FFMPEG_PATH = process.env.FFMPEG_PATH || "ffmpeg";
  
 // Resolve __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
