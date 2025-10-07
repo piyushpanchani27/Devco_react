@@ -1,12 +1,5 @@
 [phases.setup]
-nixPkgs = ["nodejs", "npm", "ffmpeg"]
-aptPkgs = ["ffmpeg"]
-
-[phases.install]
-cmds = ["npm install"]
-
-[phases.build]
-cmds = ["npx tsc -p server/tsconfig.server.json"]
+nixPkgs = ["ffmpeg"]
 
 [start]
-cmd = "node server/dist/server.js"
+cmd = "npm run server"
