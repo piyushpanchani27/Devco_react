@@ -2,7 +2,7 @@
 nixPkgs = ['nodejs_20', 'ffmpeg-full']
 
 [phases.build]
-cmds = ['npm install', 'npm run build']
+cmds = ['npm install', 'npm run build:server']
 
 [start]
-cmd = 'node dist/server.js'
+cmd = 'node server/dist/server.js'
