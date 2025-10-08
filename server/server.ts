@@ -217,10 +217,12 @@ function startFFmpeg() {
       "-ac", "2",
       "-f", "hls",
       "-hls_time", "2",
-      "-hls_list_size", "6",
+      "-hls_list_size", "3",
       "-hls_flags", "delete_segments+append_list+discont_start",
       "-hls_segment_type", "mpegts",
       "-hls_segment_filename", segmentPattern,
+      "-hls_allow_cache", "0", 
+      "-hls_start_number_source", "epoch",
       playlist,
     ], { stdio: ["pipe", "inherit", "pipe"] });
     console.log("✅ FFmpeg process spawned, PID:", ffmpegProcess.pid);
