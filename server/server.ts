@@ -11,7 +11,7 @@ console.log("Node version:", process.version);
 console.log("Environment:", process.env.NODE_ENV);
 console.log("CWD:", process.cwd());
  
-const PORT = Number(process.env.PORT);
+const PORT = Number((process.env.PORT) || 8082);
 if (!PORT) {
   console.error("❌ No PORT provided. Railway must set process.env.PORT");
   process.exit(1);
