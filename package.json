@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build --turbopack && npm run build:server",
+    "build:server": "tsc -p server/tsconfig.server.json",
     "start": "next start",
-    "server": "tsc -p server/tsconfig.server.json && node server/dist/server.js",
+    "server": "tsc -p server/tsconfig.server.json && node dist/server.js",
     "lint": "eslint"
   },
   "dependencies": {
