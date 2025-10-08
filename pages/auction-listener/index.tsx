@@ -799,12 +799,12 @@ export default function LoginPageHeader() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState("");
   const [volume, setVolume] = useState(100);
- 
-const wsRef = useRef<WebSocket | null>(null);
 
-const hlsRef = useRef<Hls | null>(null);
-const audioRef = useRef<HTMLAudioElement | null>(null);
- 
+  const wsRef = useRef<WebSocket | null>(null);
+
+  const hlsRef = useRef<Hls | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
   // Cleanup HLS when component unmounts
   const cleanupHLS = () => {
     if (hlsRef.current) {
@@ -817,41 +817,39 @@ const audioRef = useRef<HTMLAudioElement | null>(null);
     }
     setIsPlaying(false);
   };
- 
+
   // Connect to WebSocket as listener
   useEffect(() => {
     // const ws = new WebSocket("ws://localhost:8082/?role=listener");
-    // const ws = new WebSocket("wss://devcoreact-production.up.railway.app/?role=listener");
     const ws = new WebSocket(
-      `${process.env.NEXT_PUBLIC_WS_URL}/?role=listener`
+      "wss://devcoreact-production.up.railway.app/?role=listener"
     );
-
     wsRef.current = ws;
- 
+
     ws.onopen = () => {
       setIsConnected(true);
       setError("");
       console.log("Connected as listener");
     };
- 
+
     ws.onclose = () => {
       setIsConnected(false);
       console.log("WebSocket closed");
     };
- 
+
     ws.onerror = (err) => {
       setError("Connection failed. Make sure backend is running.");
       console.error("WebSocket error:", err);
     };
- 
+
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
         console.log("Received:", data);
- 
+
         if (data.type === "status") {
           setIsBroadcasting(data.broadcasting);
- 
+
           // Automatically start HLS when broadcast begins
           if (data.broadcasting && !hlsRef.current) {
             console.log("Broadcast started! Loading audio...");
@@ -865,27 +863,115 @@ const audioRef = useRef<HTMLAudioElement | null>(null);
         console.error("Message parse error:", err);
       }
     };
- 
+
     return () => {
       ws.close();
       cleanupHLS();
     };
   }, []);
- 
+
+  // Load HLS stream
+  //   const loadHLSStream = () => {
+  //     if (!audioRef.current) {
+  //       console.error("Audio element not ready");
+  //       return;
+  //     }
+
+  //     // Clean existing stream
+  //     cleanupHLS();
+
+  //     // const hlsUrl = "http://localhost:8082/hls/audio.m3u8";
+  // const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
+  //     console.log("Loading HLS stream from:", hlsUrl);
+
+  //     if (Hls.isSupported()) {
+  //       const hls = new Hls({
+  //         enableWorker: true,
+  //         lowLatencyMode: true,
+  //         maxBufferLength: 10,
+  //         maxMaxBufferLength: 20,
+  //         liveSyncDurationCount: 3,
+  //       });
+  //       hlsRef.current = hls;
+
+  //       hls.attachMedia(audioRef.current);
+
+  //       hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+  //         console.log("HLS attached to audio element");
+  //         hls.loadSource(hlsUrl);
+  //       });
+
+  //       hls.on(Hls.Events.MANIFEST_PARSED, () => {
+  //         console.log("HLS manifest loaded, starting playback");
+  //         audioRef.current
+  //           ?.play()
+  //           .then(() => {
+  //             console.log("✅ Playing live audio");
+  //             setIsPlaying(true);
+  //             setError("");
+  //           })
+  //           .catch((err) => {
+  //             console.warn("Autoplay blocked:", err);
+  //             setError("Click 'Play' button to start listening");
+  //           });
+  //       });
+
+  //       hls.on(Hls.Events.ERROR, (event, data) => {
+  //         console.error("HLS Error:", data);
+
+  //         if (data.fatal) {
+  //           switch (data.type) {
+  //             case Hls.ErrorTypes.NETWORK_ERROR:
+  //               console.log("Network error - retrying...");
+  //               setError("Connection issue - retrying...");
+  //               setTimeout(() => hls.startLoad(), 1000);
+  //               break;
+  //             case Hls.ErrorTypes.MEDIA_ERROR:
+  //               console.log("Media error - recovering...");
+  //               hls.recoverMediaError();
+  //               break;
+  //             default:
+  //               console.log("Fatal error - stopping playback");
+  //               setError("Playback failed. Please refresh the page.");
+  //               cleanupHLS();
+  //               break;
+  //           }
+  //         }
+  //       });
+  //     } else if (audioRef.current.canPlayType("application/vnd.apple.mpegurl")) {
+  //       // Safari native HLS
+  //       console.log("Using native HLS (Safari)");
+  //       audioRef.current.src = hlsUrl;
+  //       audioRef.current
+  //         .play()
+  //         .then(() => {
+  //           setIsPlaying(true);
+  //           setError("");
+  //         })
+  //         .catch((err) => {
+  //           console.warn("Native HLS autoplay blocked:", err);
+  //           setError("Click 'Play' button to start listening");
+  //         });
+  //     } else {
+  //       setError(
+  //         "HLS not supported in this browser. Please use Chrome, Firefox, or Safari."
+  //       );
+  //     }
+  //   };
   // Load HLS stream
   const loadHLSStream = () => {
     if (!audioRef.current) {
       console.error("Audio element not ready");
       return;
     }
- 
+
     // Clean existing stream
     cleanupHLS();
- 
-    // const hlsUrl = "http://localhost:8082/hls/audio.m3u8";
-const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
+
+    const hlsUrl =
+      "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
     console.log("Loading HLS stream from:", hlsUrl);
- 
+
     if (Hls.isSupported()) {
       const hls = new Hls({
         enableWorker: true,
@@ -893,34 +979,43 @@ const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
         maxBufferLength: 10,
         maxMaxBufferLength: 20,
         liveSyncDurationCount: 3,
+        startLevel: -1,
+        liveBackBufferLength: 0,
+        liveMaxLatencyDurationCount: 3,
+        liveDurationInfinity: true,
       });
       hlsRef.current = hls;
- 
+
       hls.attachMedia(audioRef.current);
- 
+
       hls.on(Hls.Events.MEDIA_ATTACHED, () => {
         console.log("HLS attached to audio element");
         hls.loadSource(hlsUrl);
       });
- 
+
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log("HLS manifest loaded, starting playback");
-        audioRef.current
-          ?.play()
-          .then(() => {
-            console.log("✅ Playing live audio");
-            setIsPlaying(true);
-            setError("");
-          })
-          .catch((err) => {
-            console.warn("Autoplay blocked:", err);
-            setError("Click 'Play' button to start listening");
-          });
+        // FIX: Add null check before calling play()
+        setTimeout(() => {
+          if (audioRef.current) {
+            audioRef.current
+              .play()
+              .then(() => {
+                console.log("✅ Playing live audio");
+                setIsPlaying(true);
+                setError("");
+              })
+              .catch((err) => {
+                console.warn("Autoplay blocked:", err);
+                setError("Click 'Play' button to start listening");
+              });
+          }
+        }, 2000);
       });
- 
+
       hls.on(Hls.Events.ERROR, (event, data) => {
         console.error("HLS Error:", data);
- 
+
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
@@ -940,27 +1035,33 @@ const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
           }
         }
       });
-    } else if (audioRef.current.canPlayType("application/vnd.apple.mpegurl")) {
-      // Safari native HLS
+    } else if (
+      audioRef.current &&
+      audioRef.current.canPlayType("application/vnd.apple.mpegurl")
+    ) {
+      // FIX: Add null check for Safari native HLS
       console.log("Using native HLS (Safari)");
       audioRef.current.src = hlsUrl;
-      audioRef.current
-        .play()
-        .then(() => {
-          setIsPlaying(true);
-          setError("");
-        })
-        .catch((err) => {
-          console.warn("Native HLS autoplay blocked:", err);
-          setError("Click 'Play' button to start listening");
-        });
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current
+            .play()
+            .then(() => {
+              setIsPlaying(true);
+              setError("");
+            })
+            .catch((err) => {
+              console.warn("Native HLS autoplay blocked:", err);
+              setError("Click 'Play' button to start listening");
+            });
+        }
+      }, 2000);
     } else {
       setError(
         "HLS not supported in this browser. Please use Chrome, Firefox, or Safari."
       );
     }
   };
- 
   // Manual play button
   const handlePlay = () => {
     if (isBroadcasting) {
@@ -969,16 +1070,24 @@ const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
       setError("No broadcast available. Waiting for speaker...");
     }
   };
- 
+
+  // Handle volume change
+  // const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const vol = parseInt(e.target.value);
+  //   setVolume(vol);
+  //   if (audioRef.current) {
+  //     audioRef.current.volume = vol / 100;
+  //   }
+  // };
   // Handle volume change
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const vol = parseInt(e.target.value);
     setVolume(vol);
+    // FIX: Add null check
     if (audioRef.current) {
       audioRef.current.volume = vol / 100;
     }
   };
- 
   return (
     <div
       style={{
@@ -1011,7 +1120,7 @@ const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
         >
           🎧 Auction Listener
         </h1>
- 
+
         {/* Connection Status */}
         <div
           style={{
@@ -1026,7 +1135,7 @@ const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
         >
           {isConnected ? "✅ Connected to Server" : "❌ Not Connected"}
         </div>
- 
+
         {/* Broadcasting Status */}
         <div
           style={{
@@ -1043,7 +1152,7 @@ const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
             ? "🔴 Speaker is Broadcasting"
             : "⚫ Waiting for Speaker..."}
         </div>
- 
+
         {/* Error Message */}
         {error && (
           <div
@@ -1060,8 +1169,15 @@ const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
             ⚠️ {error}
           </div>
         )}
- 
+
         {/* Audio Player */}
+        {/* <audio
+          ref={audioRef}
+          style={{ display: "none" }}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onEnded={() => setIsPlaying(false)}
+        /> */}
         <audio
           ref={audioRef}
           style={{ display: "none" }}
@@ -1069,7 +1185,6 @@ const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
           onPause={() => setIsPlaying(false)}
           onEnded={() => setIsPlaying(false)}
         />
- 
         {/* Custom Player UI */}
         <div
           style={{
@@ -1103,7 +1218,7 @@ const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
           >
             {isPlaying ? "🔊 Playing Live" : "▶️ Start Listening"}
           </button>
- 
+
           {/* Status Indicator */}
           {isPlaying && (
             <div
@@ -1129,7 +1244,7 @@ const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
               Live Audio Playing
             </div>
           )}
- 
+
           {/* Volume Control */}
           <div style={{ marginTop: 20 }}>
             <label
@@ -1156,7 +1271,7 @@ const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
             />
           </div>
         </div>
- 
+
         {/* Instructions */}
         <div
           style={{
@@ -1176,7 +1291,7 @@ const hlsUrl = "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
           </ol>
         </div>
       </div>
- 
+
       <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; }
