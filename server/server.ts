@@ -216,7 +216,7 @@ function startFFmpeg() {
       "-ar", "48000",
       "-ac", "2",
       "-f", "hls",
-      "-hls_time", "0.5",
+      "-hls_time", "2",
       "-hls_list_size", "3",
       "-hls_flags", "delete_segments+append_list+discont_start",
       "-hls_segment_type", "mpegts",
