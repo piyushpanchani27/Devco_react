@@ -973,18 +973,13 @@ export default function LoginPageHeader() {
     console.log("Loading HLS stream from:", hlsUrl);
 
     if (Hls.isSupported()) {
-      const hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: true,
-        maxBufferLength: 10,
-        maxMaxBufferLength: 20,
-        liveSyncDurationCount: 3,
-        // FIX: Remove these conflicting options or adjust values
-        // startLevel: -1,
-        // liveBackBufferLength: 0,
-        // liveMaxLatencyDurationCount: 3, // This was causing the error
-        // liveDurationInfinity: true,
-      });
+    const hls = new Hls({
+      enableWorker: true,
+      lowLatencyMode: true,
+      liveSyncDurationCount: 1, // Lower means closer to “live”
+      maxBufferLength: 2, // If user’s browser supports it
+      maxMaxBufferLength: 4,
+    });
       hlsRef.current = hls;
 
       hls.attachMedia(audioRef.current);
