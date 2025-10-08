@@ -5,12 +5,18 @@ import { spawn, ChildProcess } from "child_process";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process";
 
 console.log("🚀 SERVER STARTING...");
 console.log("Node version:", process.version);
 console.log("Environment:", process.env.NODE_ENV);
 console.log("CWD:", process.cwd());
- 
+ try {
+  const ffmpegPath = execSync("which ffmpeg").toString().trim();
+  console.log("🟢 FFmpeg is installed at:", ffmpegPath);
+} catch (err) {
+  console.error("🔴 FFmpeg not found in PATH");
+}
 const PORT = Number((process.env.PORT) || 8082);
 if (!PORT) {
   console.error("❌ No PORT provided. Railway must set process.env.PORT");
