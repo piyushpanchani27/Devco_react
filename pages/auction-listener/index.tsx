@@ -979,10 +979,11 @@ export default function LoginPageHeader() {
         maxBufferLength: 10,
         maxMaxBufferLength: 20,
         liveSyncDurationCount: 3,
-        startLevel: -1,
-        liveBackBufferLength: 0,
-        liveMaxLatencyDurationCount: 3,
-        liveDurationInfinity: true,
+        // FIX: Remove these conflicting options or adjust values
+        // startLevel: -1,
+        // liveBackBufferLength: 0,
+        // liveMaxLatencyDurationCount: 3, // This was causing the error
+        // liveDurationInfinity: true,
       });
       hlsRef.current = hls;
 
@@ -995,7 +996,6 @@ export default function LoginPageHeader() {
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log("HLS manifest loaded, starting playback");
-        // FIX: Add null check before calling play()
         setTimeout(() => {
           if (audioRef.current) {
             audioRef.current
@@ -1039,7 +1039,6 @@ export default function LoginPageHeader() {
       audioRef.current &&
       audioRef.current.canPlayType("application/vnd.apple.mpegurl")
     ) {
-      // FIX: Add null check for Safari native HLS
       console.log("Using native HLS (Safari)");
       audioRef.current.src = hlsUrl;
       setTimeout(() => {
