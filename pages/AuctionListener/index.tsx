@@ -513,7 +513,7 @@ export default function AuctionListener() {
     retryCountRef.current = 0;
   }, []);
 
-  // Load HLS stream with retry logic
+  // Load HLS stream with retry logic - NO AUTO PLAY
   const loadHLSStream = useCallback(() => {
     if (!audioRef.current) {
       console.error("Audio element not ready");
@@ -558,20 +558,7 @@ export default function AuctionListener() {
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log("✅ HLS manifest loaded successfully!");
         retryCountRef.current = 0; // Reset retry count on success
-
-        setTimeout(() => {
-          if (audioRef.current) {
-            audioRef.current
-              .play()
-              .then(() => {
-                console.log("✅ Playing live audio");
-                setIsPlaying(true);
-              })
-              .catch((err) => {
-                console.warn("Autoplay blocked:", err);
-              });
-          }
-        }, 1000);
+        // REMOVED AUTO PLAY - User must click button
       });
 
       hls.on(Hls.Events.ERROR, (event, data) => {
@@ -639,19 +626,7 @@ export default function AuctionListener() {
         }
       });
 
-      setTimeout(() => {
-        if (audioRef.current) {
-          audioRef.current
-            .play()
-            .then(() => {
-              setIsPlaying(true);
-              retryCountRef.current = 0;
-            })
-            .catch((err) => {
-              console.warn("Native HLS autoplay blocked:", err);
-            });
-        }
-      }, 1000);
+      // REMOVED AUTO PLAY FOR SAFARI TOO
     }
   }, [cleanupHLS]);
 
@@ -659,8 +634,30 @@ export default function AuctionListener() {
     if (!audioRef.current) return;
     if (!hlsRef.current) {
       loadHLSStream();
+      // Wait for stream to load, then play
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current
+            .play()
+            .then(() => {
+              console.log("✅ Playing live audio");
+              setIsPlaying(true);
+            })
+            .catch((err) => {
+              console.error("Play failed:", err);
+            });
+        }
+      }, 2000);
     } else {
-      audioRef.current.play().then(() => setIsPlaying(true));
+      audioRef.current
+        .play()
+        .then(() => {
+          console.log("✅ Playing live audio");
+          setIsPlaying(true);
+        })
+        .catch((err) => {
+          console.error("Play failed:", err);
+        });
     }
   }, [loadHLSStream]);
 
@@ -708,7 +705,7 @@ export default function AuctionListener() {
             console.log(
               "Broadcast started! Waiting for HLS stream to be ready..."
             );
-            // INCREASED DELAY: Give server more time to generate HLS segments
+            // Load stream but DON'T play automatically
             setTimeout(() => {
               console.log("Attempting to connect to HLS stream...");
               loadHLSStream();
@@ -728,8 +725,10 @@ export default function AuctionListener() {
       cleanupHLS();
     };
   }, [loadHLSStream, cleanupHLS]);
-   const isActive = isConnected && isBroadcasting;
-return (
+
+  const isActive = isConnected && isBroadcasting;
+
+  return (
     <div>
       <audio
         ref={audioRef}
@@ -758,10 +757,10 @@ return (
             borderRadius: "16px",
             background: isActive
               ? "linear-gradient(177deg, #00008B 0%, #03073b 100%)"
-              : "linear-gradient(177deg, #8e949f 0%, #2d3748 100%);",
+              : "linear-gradient(177deg, #8e949f 0%, #2d3748 100%)",
             border: isActive
               ? "2px solid rgb(47 55 111 / 16%)"
-              : "2px solid rgb(145 140 140 / 72%);",
+              : "2px solid rgb(145 140 140 / 72%)",
             cursor: isActive ? "pointer" : "not-allowed",
             boxShadow: isActive
               ? "0 8px 30px rgba(102, 126, 234, 0.4)"
@@ -844,7 +843,6 @@ return (
               <span
                 style={{
                   fontSize: "12px",
-                  // fontWeight: "bold",
                   color: "#fff",
                   letterSpacing: "1.5px",
                   textShadow: isActive
@@ -891,137 +889,15 @@ return (
       <style>{`
         @keyframes pulseGlow {
           0%, 100% {
-            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+            box-shadow: 0 0 0 0 rgba(0, 0, 139, 0.7);
           }
           50% {
-            box-shadow: 0 0 0 15px rgba(102, 126, 234, 0);
+            box-shadow: 0 0 0 15px rgba(0, 0, 139, 0);
           }
         }
       `}</style>
     </div>
   );
-  // return (
-  //   <div>
-  //     <audio
-  //       ref={audioRef}
-  //       style={{ display: "none" }}
-  //       onPlay={() => setIsPlaying(true)}
-  //       onPause={() => setIsPlaying(false)}
-  //       onEnded={() => setIsPlaying(false)}
-  //     />
-  //     <div
-  //       style={{
-  //         position: "fixed",
-  //         right: 20,
-  //         // top: "11%",
-  //         top: "6.5rem",
-  //         zIndex: 999,
-  //       }}
-  //     >
-  //       {/* BLINKING GREEN DOT - ONLY WHEN LIVE */}
-
-  //       <div
-  //         style={{
-  //           display: "flex",
-  //           alignItems: "center",
-  //           gap: 8,
-  //           padding: "10px 15px",
-  //         }}
-  //       >
-  //         {isConnected && isBroadcasting && (
-  //           <span
-  //             style={{
-  //               display: "inline-block",
-  //               width: 12,
-  //               height: 12,
-  //               borderRadius: "50%",
-  //               background: "#28a745",
-  //               animation: "pulseDot 1.2s infinite",
-  //               flexShrink: 0,
-  //             }}
-  //           />
-  //         )}
-  //         <button
-  //           onClick={handleToggle}
-  //           disabled={!isConnected || !isBroadcasting}
-  //           style={{
-  //             width: 45,
-  //             height: 45,
-  //             borderRadius: "50%",
-  //             fontSize: 30,
-  //             background:
-  //               isConnected && isBroadcasting
-  //                 ? isPlaying
-  //                   ? "#d9534f"
-  //                   : "#28a745"
-  //                 : "#555",
-  //             border: "none",
-  //             color: "#fff",
-  //             display: "flex",
-  //             alignItems: "center",
-  //             justifyContent: "center",
-  //             cursor: isConnected && isBroadcasting ? "pointer" : "not-allowed",
-  //             boxShadow: "0 4px 24px #1115",
-  //             flexShrink: 0,
-  //           }}
-  //           aria-label={isPlaying ? "Pause" : "Play"}
-  //         >
-  //           {isPlaying ? (
-  //             <span
-  //               style={{
-  //                 display: "block",
-  //                 width: 24,
-  //                 height: 24,
-  //                 position: "relative",
-  //               }}
-  //             >
-  //               <span
-  //                 style={{
-  //                   display: "inline-block",
-  //                   width: 6,
-  //                   height: 24,
-  //                   background: "#fff",
-  //                   borderRadius: 3,
-  //                   position: "absolute",
-  //                   left: 0,
-  //                 }}
-  //               />
-  //               <span
-  //                 style={{
-  //                   display: "inline-block",
-  //                   width: 6,
-  //                   height: 24,
-  //                   background: "#fff",
-  //                   borderRadius: 3,
-  //                   position: "absolute",
-  //                   right: 0,
-  //                 }}
-  //               />
-  //             </span>
-  //           ) : (
-  //             <span
-  //               style={{
-  //                 display: "inline-block",
-  //                 width: 0,
-  //                 height: 0,
-  //                 borderTop: "12px solid transparent",
-  //                 borderBottom: "12px solid transparent",
-  //                 borderLeft: "20px solid #fff",
-  //                 marginLeft: 5,
-  //               }}
-  //             />
-  //           )}
-  //         </button>
-  //       </div>
-  //     </div>
-  //     <style>{`
-  //       @keyframes pulseDot {
-  //         0%, 100% { opacity: 1; box-shadow: 0 0 0 0 #28a745; }
-  //         50% { opacity: 0.4; box-shadow: 0 0 7px 6px #28a74533; }
-  //       }
-  //     `}</style>
-  //   </div>
-  // );
 }
 
 // "use client";
