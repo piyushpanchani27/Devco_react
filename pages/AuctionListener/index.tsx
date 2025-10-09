@@ -535,17 +535,24 @@ export default function AuctionListener() {
     );
 
     if (Hls.isSupported()) {
-      const hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: true,
-        liveSyncDurationCount: 1,
-        maxBufferLength: 2,
-        maxMaxBufferLength: 4,
-        manifestLoadingTimeOut: 10000,
-        manifestLoadingMaxRetry: 3,
-        levelLoadingTimeOut: 10000,
-        levelLoadingMaxRetry: 3,
-      });
+       const hls = new Hls({
+         enableWorker: true,
+         lowLatencyMode: true,
+         liveSyncDurationCount: 1, // Lower means closer to “live”
+         maxBufferLength: 2, // If user’s browser supports it
+         maxMaxBufferLength: 4,
+       });
+      // const hls = new Hls({
+      //   enableWorker: true,
+      //   lowLatencyMode: true,
+      //   liveSyncDurationCount: 1,
+      //   maxBufferLength: 2,
+      //   maxMaxBufferLength: 4,
+      //   manifestLoadingTimeOut: 10000,
+      //   manifestLoadingMaxRetry: 3,
+      //   levelLoadingTimeOut: 10000,
+      //   levelLoadingMaxRetry: 3,
+      // });
       hlsRef.current = hls;
 
       hls.attachMedia(audioRef.current);
