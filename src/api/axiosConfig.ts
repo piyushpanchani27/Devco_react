@@ -4,6 +4,7 @@ import {tokenAtom} from '../atoms/authAtoms';
 
 // Your base API URL
 const BASE_URL = 'https://online.devcoauctioneers.co.za/api';
+// const BASE_URL = 'http://localhost:8000/api';
 
 // Axios instance
 const apiClient = axios.create({

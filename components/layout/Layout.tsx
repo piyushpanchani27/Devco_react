@@ -8,6 +8,7 @@ import {Footer} from "./Footer";
 import {useAtom} from "jotai";
 import {configurationAtom, landingSettingsAtom} from "../../src/atoms/stateAtoms";
 import {getSettings} from "../../src/api";
+import AuctionListener from '../../pages/AuctionListener';
 
 interface LayoutProps {
     children: ReactNode;
@@ -60,6 +61,8 @@ export function Layout({children}: LayoutProps) {
             </AppShell.Navbar>
 
             <AppShell.Main>
+                        <AuctionListener />
+                
                 {children}
             </AppShell.Main>
             <AppShell.Footer visibleFrom={'md'}>

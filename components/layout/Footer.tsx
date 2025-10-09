@@ -26,7 +26,6 @@ export function Footer() {
       </Group>
 
       <Flex pr={50} align={"center"} justify={"flex-end"} gap={160}>
-        <AuctionListener />
         <Image
           onClick={() => {
             window.open(

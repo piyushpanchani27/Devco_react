@@ -740,94 +740,108 @@ export default function AuctionListener() {
       />
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 4,
+          position: "fixed",
+          right: 20,
+          // top: "11%",
+          top: "6.5rem",
+          zIndex: 999,
         }}
       >
         {/* BLINKING GREEN DOT - ONLY WHEN LIVE */}
-        {isConnected && isBroadcasting && (
-          <span
-            style={{
-              display: "inline-block",
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
-              background: "#28a745",
-              animation: "pulseDot 1.2s infinite",
-            }}
-          />
-        )}
-        <button
-          onClick={handleToggle}
-          disabled={!isConnected || !isBroadcasting}
+
+        <div
           style={{
-            width: 45,
-            height: 45,
-            borderRadius: "50%",
-            fontSize: 30,
-            background:
-              isConnected && isBroadcasting
-                ? isPlaying
-                  ? "#d9534f"
-                  : "#28a745"
-                : "#555",
-            border: "none",
-            color: "#fff",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            cursor: isConnected && isBroadcasting ? "pointer" : "not-allowed",
-            boxShadow: "0 4px 24px #1115",
+            gap: 8,
+            padding: "10px 15px",
           }}
-          aria-label={isPlaying ? "Pause" : "Play"}
         >
-          {isPlaying ? (
-            <span
-              style={{
-                display: "block",
-                width: 24,
-                height: 24,
-                position: "relative",
-              }}
-            >
-              <span
-                style={{
-                  display: "inline-block",
-                  width: 6,
-                  height: 24,
-                  background: "#fff",
-                  borderRadius: 3,
-                  position: "absolute",
-                  left: 0,
-                }}
-              />
-              <span
-                style={{
-                  display: "inline-block",
-                  width: 6,
-                  height: 24,
-                  background: "#fff",
-                  borderRadius: 3,
-                  position: "absolute",
-                  right: 0,
-                }}
-              />
-            </span>
-          ) : (
+          {isConnected && isBroadcasting && (
             <span
               style={{
                 display: "inline-block",
-                width: 0,
-                height: 0,
-                borderTop: "12px solid transparent",
-                borderBottom: "12px solid transparent",
-                borderLeft: "20px solid #fff",
-                marginLeft: 5,
+                width: 12,
+                height: 12,
+                borderRadius: "50%",
+                background: "#28a745",
+                animation: "pulseDot 1.2s infinite",
+                flexShrink: 0,
               }}
             />
           )}
-        </button>
+          <button
+            onClick={handleToggle}
+            disabled={!isConnected || !isBroadcasting}
+            style={{
+              width: 45,
+              height: 45,
+              borderRadius: "50%",
+              fontSize: 30,
+              background:
+                isConnected && isBroadcasting
+                  ? isPlaying
+                    ? "#d9534f"
+                    : "#28a745"
+                  : "#555",
+              border: "none",
+              color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: isConnected && isBroadcasting ? "pointer" : "not-allowed",
+              boxShadow: "0 4px 24px #1115",
+              flexShrink: 0,
+            }}
+            aria-label={isPlaying ? "Pause" : "Play"}
+          >
+            {isPlaying ? (
+              <span
+                style={{
+                  display: "block",
+                  width: 24,
+                  height: 24,
+                  position: "relative",
+                }}
+              >
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 6,
+                    height: 24,
+                    background: "#fff",
+                    borderRadius: 3,
+                    position: "absolute",
+                    left: 0,
+                  }}
+                />
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 6,
+                    height: 24,
+                    background: "#fff",
+                    borderRadius: 3,
+                    position: "absolute",
+                    right: 0,
+                  }}
+                />
+              </span>
+            ) : (
+              <span
+                style={{
+                  display: "inline-block",
+                  width: 0,
+                  height: 0,
+                  borderTop: "12px solid transparent",
+                  borderBottom: "12px solid transparent",
+                  borderLeft: "20px solid #fff",
+                  marginLeft: 5,
+                }}
+              />
+            )}
+          </button>
+        </div>
       </div>
       <style>{`
         @keyframes pulseDot {
