@@ -496,6 +496,8 @@ export default function AuctionListener() {
   const wsRef = useRef<WebSocket | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const hlsRef = useRef<Hls | null>(null);
+  const retryCountRef = useRef(0);
+  const maxRetries = 5;
 
   // Cleanup HLS when component unmounts
   const cleanupHLS = useCallback(() => {
@@ -508,9 +510,10 @@ export default function AuctionListener() {
       audioRef.current.src = "";
     }
     setIsPlaying(false);
+    retryCountRef.current = 0;
   }, []);
 
-  // Load HLS stream - now with useCallback to stabilize the function reference
+  // Load HLS stream with retry logic
   const loadHLSStream = useCallback(() => {
     if (!audioRef.current) {
       console.error("Audio element not ready");
@@ -518,11 +521,18 @@ export default function AuctionListener() {
     }
 
     // Clean existing stream
-    cleanupHLS();
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
+    }
 
     const hlsUrl =
       "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
-    console.log("Loading HLS stream from:", hlsUrl);
+    console.log(
+      `Loading HLS stream from: ${hlsUrl} (Attempt ${
+        retryCountRef.current + 1
+      }/${maxRetries})`
+    );
 
     if (Hls.isSupported()) {
       const hls = new Hls({
@@ -531,6 +541,10 @@ export default function AuctionListener() {
         liveSyncDurationCount: 1,
         maxBufferLength: 2,
         maxMaxBufferLength: 4,
+        manifestLoadingTimeOut: 10000,
+        manifestLoadingMaxRetry: 3,
+        levelLoadingTimeOut: 10000,
+        levelLoadingMaxRetry: 3,
       });
       hlsRef.current = hls;
 
@@ -542,8 +556,9 @@ export default function AuctionListener() {
       });
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        console.log("HLS manifest loaded, starting playback");
-        // Increased delay to ensure audio element is ready
+        console.log("✅ HLS manifest loaded successfully!");
+        retryCountRef.current = 0; // Reset retry count on success
+
         setTimeout(() => {
           if (audioRef.current) {
             audioRef.current
@@ -556,7 +571,7 @@ export default function AuctionListener() {
                 console.warn("Autoplay blocked:", err);
               });
           }
-        }, 2000);
+        }, 1000);
       });
 
       hls.on(Hls.Events.ERROR, (event, data) => {
@@ -565,13 +580,38 @@ export default function AuctionListener() {
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
-              console.log("Network error - retrying...");
-              setTimeout(() => hls.startLoad(), 1000);
+              console.log("Network error detected");
+
+              // Retry with exponential backoff
+              if (retryCountRef.current < maxRetries) {
+                retryCountRef.current++;
+                const retryDelay = Math.min(
+                  1000 * Math.pow(2, retryCountRef.current - 1),
+                  5000
+                );
+                console.log(
+                  `Retrying in ${retryDelay}ms... (${retryCountRef.current}/${maxRetries})`
+                );
+
+                setTimeout(() => {
+                  if (hlsRef.current) {
+                    hls.destroy();
+                  }
+                  loadHLSStream(); // Recursively retry
+                }, retryDelay);
+              } else {
+                console.error(
+                  "Max retries reached. Stream may not be ready yet."
+                );
+                cleanupHLS();
+              }
               break;
+
             case Hls.ErrorTypes.MEDIA_ERROR:
               console.log("Media error - recovering...");
               hls.recoverMediaError();
               break;
+
             default:
               console.log("Fatal error - stopping playback");
               cleanupHLS();
@@ -585,18 +625,33 @@ export default function AuctionListener() {
     ) {
       console.log("Using native HLS (Safari)");
       audioRef.current.src = hlsUrl;
+
+      audioRef.current.addEventListener("error", (e) => {
+        console.error("Native HLS error:", e);
+        if (retryCountRef.current < maxRetries) {
+          retryCountRef.current++;
+          const retryDelay = Math.min(
+            1000 * Math.pow(2, retryCountRef.current - 1),
+            5000
+          );
+          console.log(`Retrying in ${retryDelay}ms...`);
+          setTimeout(() => loadHLSStream(), retryDelay);
+        }
+      });
+
       setTimeout(() => {
         if (audioRef.current) {
           audioRef.current
             .play()
             .then(() => {
               setIsPlaying(true);
+              retryCountRef.current = 0;
             })
             .catch((err) => {
               console.warn("Native HLS autoplay blocked:", err);
             });
         }
-      }, 2000);
+      }, 1000);
     }
   }, [cleanupHLS]);
 
@@ -649,11 +704,15 @@ export default function AuctionListener() {
         if (data.type === "status") {
           setIsBroadcasting(data.broadcasting);
 
-          // Automatically start HLS when broadcast begins
-          // Added extra delay to ensure audio element is mounted
           if (data.broadcasting && !hlsRef.current) {
-            console.log("Broadcast started! Loading audio...");
-            setTimeout(() => loadHLSStream(), 1500);
+            console.log(
+              "Broadcast started! Waiting for HLS stream to be ready..."
+            );
+            // INCREASED DELAY: Give server more time to generate HLS segments
+            setTimeout(() => {
+              console.log("Attempting to connect to HLS stream...");
+              loadHLSStream();
+            }, 3000); // 3 seconds delay
           } else if (!data.broadcasting && hlsRef.current) {
             console.log("Broadcast stopped");
             cleanupHLS();
@@ -668,7 +727,7 @@ export default function AuctionListener() {
       ws.close();
       cleanupHLS();
     };
-  }, [loadHLSStream, cleanupHLS]); // Added proper dependencies
+  }, [loadHLSStream, cleanupHLS]);
 
   return (
     <div>
@@ -724,7 +783,6 @@ export default function AuctionListener() {
           aria-label={isPlaying ? "Pause" : "Play"}
         >
           {isPlaying ? (
-            // Pause icon (two vertical bars)
             <span
               style={{
                 display: "block",
@@ -757,7 +815,6 @@ export default function AuctionListener() {
               />
             </span>
           ) : (
-            // Play icon (triangle)
             <span
               style={{
                 display: "inline-block",
@@ -772,7 +829,6 @@ export default function AuctionListener() {
           )}
         </button>
       </div>
-      {/* Pulse animation */}
       <style>{`
         @keyframes pulseDot {
           0%, 100% { opacity: 1; box-shadow: 0 0 0 0 #28a745; }
