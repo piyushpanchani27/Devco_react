@@ -44,7 +44,7 @@ export default function AuctionListener() {
 
     const hlsUrl =
       // "http://localhost:8082/hls/audio.m3u8";
-      "https://devcoreact-production.up.railway.app/hls/audio.m3u8";
+      "https://devcoreact-production-d589.up.railway.app/hls/audio.m3u8";
     console.log(
       `Loading HLS stream from: ${hlsUrl} (Attempt ${
         retryCountRef.current + 1
@@ -200,7 +200,7 @@ export default function AuctionListener() {
   useEffect(() => {
     // const ws = new WebSocket("ws://localhost:8082/?role=listener")
     const ws = new WebSocket(
-      "wss://devcoreact-production.up.railway.app/?role=listener"
+      "wss://devcoreact-production-d589.up.railway.app/?role=listener"
     );
     wsRef.current = ws;
 
