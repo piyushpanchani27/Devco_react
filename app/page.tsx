@@ -68,29 +68,77 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // const socket = new WebSocket("ws://localhost:8082/?role=broadcaster");
-    const socket = new WebSocket(
-      "wss://devcoreact-production.up.railway.app/?role=broadcaster"
-    );
+    let socket: WebSocket | null = null;
+    let reconnectTimeout: NodeJS.Timeout;
 
-    socketRef.current = socket;
+    const connect = () => {
+      console.log("🔌 Attempting to connect to WebSocket...");
 
-    socket.onopen = () => {
-      console.log("WebSocket connection opened.");
+      socket = new WebSocket(
+        "wss://devcoreact-production.up.railway.app/?role=broadcaster"
+      );
+
+      socketRef.current = socket;
+
+      socket.onopen = () => {
+        console.log("✅ WebSocket connection opened");
+      };
+
+      socket.onclose = (event) => {
+        console.log(
+          `❌ WebSocket closed: Code ${event.code}, Reason: ${event.reason}`
+        );
+
+        // Attempt reconnection after 3 seconds
+        reconnectTimeout = setTimeout(() => {
+          console.log("🔄 Attempting to reconnect...");
+          connect();
+        }, 3000);
+      };
+
+      socket.onerror = (error) => {
+        console.error("❌ WebSocket error:", error);
+        console.log("Connection state:", socket?.readyState);
+      };
+
+      socket.onmessage = (event) => {
+        console.log("📨 Message from server:", event.data);
+      };
     };
 
-    socket.onclose = () => {
-      console.log("WebSocket connection closed.");
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
+    connect();
 
     return () => {
-      socket.close();
+      clearTimeout(reconnectTimeout);
+      if (socket) {
+        socket.close();
+      }
     };
   }, []);
+  // useEffect(() => {
+  //   // const socket = new WebSocket("ws://localhost:8082/?role=broadcaster");
+  //   const socket = new WebSocket(
+  //     "wss://devcoreact-production.up.railway.app/?role=broadcaster"
+  //   );
+
+  //   socketRef.current = socket;
+
+  //   socket.onopen = () => {
+  //     console.log("WebSocket connection opened.");
+  //   };
+
+  //   socket.onclose = () => {
+  //     console.log("WebSocket connection closed.");
+  //   };
+
+  //   socket.onerror = (error) => {
+  //     console.error("WebSocket error:", error);
+  //   };
+
+  //   return () => {
+  //     socket.close();
+  //   };
+  // }, []);
 
   return (
     <div className="container">
