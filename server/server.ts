@@ -16,7 +16,7 @@ try {
   const ffmpegPath = execSync("which ffmpeg").toString().trim();
   console.log("🟢 FFmpeg is installed at:", ffmpegPath);
 } catch (err) {
-  console.error("🔴 FFmpeg not found in PATH");
+  console.error("🔴 FFmpeg not found in PATH"); // This is test 
 }
 // const PORT = Number(process.env.PORT || 8082);
 const PORT = Number(process.env.PORT);
