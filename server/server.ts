@@ -58,7 +58,7 @@ app.use(cors({
   credentials: true
 }));
 
-// Add middleware to log all /hls requests
+// Add middleware to log all /hls requests ffsdf
 app.use("/hls", (req, res, next) => {
   console.log(`🔍 HLS request: ${req.method} ${req.path}`);
   const requestedFile = path.join(outputDir, req.path.replace(/^\//, ""));
