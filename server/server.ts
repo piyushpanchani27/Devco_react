@@ -351,10 +351,9 @@ const PORT = Number(process.env.PORT || 8082);
 console.log("Port:", PORT);
 
 // FFMPEG PATH - Use detected path first, then fallback
-const FFMPEG_PATH = process.env.FFMPEG_PATH ||
-  detectedFFmpegPath ||
-  (process.platform === "win32" ? "C:\\ffmpeg\\bin\\ffmpeg.exe" : "ffmpeg");
-console.log("FFmpeg path to be used:", FFMPEG_PATH);
+const FFMPEG_PATH = "/root/.nix-profile/bin/ffmpeg" 
+//   (process.platform === "win32" ? "C:\\ffmpeg\\bin\\ffmpeg.exe" : "ffmpeg");
+// console.log("FFmpeg path to be used:", FFMPEG_PATH);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
