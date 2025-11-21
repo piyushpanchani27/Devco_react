@@ -336,10 +336,12 @@ console.log("Environment:", process.env.NODE_ENV);
 console.log("CWD:", process.cwd());
 console.log("Platform:", process.platform);
 
+// Detect FFmpeg path
+let detectedFFmpegPath = null;
 try {
   const command = process.platform === "win32" ? "where ffmpeg" : "which ffmpeg";
-  const ffmpegPath = execSync(command).toString().trim();
-  console.log("🟢 FFmpeg is installed at:", ffmpegPath);
+  detectedFFmpegPath = execSync(command).toString().trim();
+  console.log("🟢 FFmpeg is installed at:", detectedFFmpegPath);
 } catch (err) {
   console.error("🔴 FFmpeg not found in PATH");
 }
@@ -348,10 +350,11 @@ try {
 const PORT = Number(process.env.PORT || 8082);
 console.log("Port:", PORT);
 
-// FFMPEG PATH - Use Linux path for Railway
+// FFMPEG PATH - Use detected path first, then fallback
 const FFMPEG_PATH = process.env.FFMPEG_PATH ||
-  (process.platform === "win32" ? "C:\\ffmpeg\\bin\\ffmpeg.exe" : "/usr/bin/ffmpeg");
-console.log("FFmpeg path:", FFMPEG_PATH);
+  detectedFFmpegPath ||
+  (process.platform === "win32" ? "C:\\ffmpeg\\bin\\ffmpeg.exe" : "ffmpeg");
+console.log("FFmpeg path to be used:", FFMPEG_PATH);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
