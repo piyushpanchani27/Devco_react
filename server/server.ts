@@ -11,23 +11,65 @@ console.log("🚀 SERVER STARTING...");
 console.log("Node version:", process.version);
 console.log("Environment:", process.env.NODE_ENV);
 console.log("CWD:", process.cwd());
+
+// Try to find FFmpeg in PATH
+let detectedFfmpegPath: string | null = null;
 try {
   const command = process.platform === "win32" ? "where ffmpeg" : "which ffmpeg";
-  const ffmpegPath = execSync(command).toString().trim();
-  console.log("🟢 FFmpeg is installed at:", ffmpegPath);
+  detectedFfmpegPath = execSync(command).toString().trim();
+  console.log("🟢 FFmpeg is installed at:", detectedFfmpegPath);
 } catch (err) {
   console.error("🔴 FFmpeg not found in PATH");
 }
+
 // const PORT = Number(process.env.PORT || 8082);
 const PORT = Number(process.env.PORT);
 if (!PORT) {
   console.error("❌ No PORT provided. Railway must set process.env.PORT");
   process.exit(1);  
 }
-const FFMPEG_PATH = process.env.FFMPEG_PATH || '/usr/bin/ffmpeg';
+
+// Use detected path if available, otherwise fallback to common paths
+// Priority: 1. Environment variable, 2. Detected path, 3. Nix profile, 4. Standard location
+let FFMPEG_PATH: string = process.env.FFMPEG_PATH || '';
+if (!FFMPEG_PATH) {
+  if (detectedFfmpegPath) {
+    FFMPEG_PATH = detectedFfmpegPath;
+  } else if (fs.existsSync('/root/.nix-profile/bin/ffmpeg')) {
+    FFMPEG_PATH = '/root/.nix-profile/bin/ffmpeg';
+  } else {
+    FFMPEG_PATH = '/usr/bin/ffmpeg';
+  }
+}
 //  const FFMPEG_PATH = process.env.FFMPEG_PATH || "C:\\ffmpeg\\bin\\ffmpeg.exe";
+
 console.log("Port:", PORT);
 console.log("FFmpeg path:", FFMPEG_PATH);
+
+// Verify FFmpeg exists and is executable
+try {
+  if (fs.existsSync(FFMPEG_PATH)) {
+    console.log("✅ FFmpeg file exists at:", FFMPEG_PATH);
+    // Test if it's executable
+    try {
+      fs.accessSync(FFMPEG_PATH, fs.constants.X_OK);
+      console.log("✅ FFmpeg is executable");
+    } catch (e) {
+      console.error("❌ FFmpeg is NOT executable");
+    }
+  } else {
+    console.error("❌ FFmpeg file does NOT exist at:", FFMPEG_PATH);
+    if (detectedFfmpegPath && detectedFfmpegPath !== FFMPEG_PATH) {
+      console.log("⚠️ Detected path is different:", detectedFfmpegPath);
+      if (fs.existsSync(detectedFfmpegPath)) {
+        console.log("✅ Using detected path instead");
+        FFMPEG_PATH = detectedFfmpegPath;
+      }
+    }
+  }
+} catch (err) {
+  console.error("❌ Error checking FFmpeg path:", err);
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -229,6 +271,18 @@ function startFFmpeg() {
   }
 
   console.log("Spawning FFmpeg with path:", FFMPEG_PATH);
+  // Final check before spawning
+  if (!fs.existsSync(FFMPEG_PATH)) {
+    console.error("❌ FFmpeg not found at:", FFMPEG_PATH);
+    if (detectedFfmpegPath && fs.existsSync(detectedFfmpegPath)) {
+      console.log("🔄 Switching to detected path:", detectedFfmpegPath);
+      FFMPEG_PATH = detectedFfmpegPath;
+    } else {
+      console.error("❌ No valid FFmpeg path found!");
+      return;
+    }
+  }
+  
   try {
     ffmpegProcess = spawn(FFMPEG_PATH, [
       "-hide_banner",
@@ -257,7 +311,7 @@ function startFFmpeg() {
     return;
   }
   
-  if (ffmpegProcess.stderr) {
+  if (ffmpegProcess && ffmpegProcess.stderr) {
     ffmpegProcess.stderr.on("data", (buf) => {
       const line = buf.toString();
       if (line.includes("Opening") || line.includes("error") || line.includes("Error")) {
@@ -266,19 +320,21 @@ function startFFmpeg() {
     });
   }
   
-  ffmpegProcess.on("error", (err) => {
-    console.error("❌ FFmpeg process error:", err);
-    ffmpegProcess = null;
-    isBroadcasting = false;
-    notifyListeners();
-  });
-  
-  ffmpegProcess.on("close", (code, sig) => {
-    console.log(`FFmpeg exited code=${code} sig=${sig}`);
-    ffmpegProcess = null;
-    isBroadcasting = false;
-    notifyListeners();
-  });
+  if (ffmpegProcess) {
+    ffmpegProcess.on("error", (err) => {
+      console.error("❌ FFmpeg process error:", err);
+      ffmpegProcess = null;
+      isBroadcasting = false;
+      notifyListeners();
+    });
+    
+    ffmpegProcess.on("close", (code, sig) => {
+      console.log(`FFmpeg exited code=${code} sig=${sig}`);
+      ffmpegProcess = null;
+      isBroadcasting = false;
+      notifyListeners();
+    });
+  }
   
   // ADD THIS: Wait for first segment to be created before notifying listeners
   let firstSegmentCreated = false;
