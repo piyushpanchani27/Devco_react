@@ -19,14 +19,14 @@ try {
 catch (err) {
     console.error("🔴 FFmpeg not found in PATH");
 }
-const PORT = Number(process.env.PORT || 8082);
-// const PORT = Number(process.env.PORT);
+// const PORT = Number(process.env.PORT || 8082);
+const PORT = Number(process.env.PORT);
 if (!PORT) {
     console.error("❌ No PORT provided. Railway must set process.env.PORT");
     process.exit(1);
 }
-// const FFMPEG_PATH = process.env.FFMPEG_PATH || '/usr/bin/ffmpeg';
-const FFMPEG_PATH = process.env.FFMPEG_PATH || "C:\\ffmpeg\\bin\\ffmpeg.exe";
+const FFMPEG_PATH = process.env.FFMPEG_PATH || '/usr/bin/ffmpeg';
+//  const FFMPEG_PATH = process.env.FFMPEG_PATH || "C:\\ffmpeg\\bin\\ffmpeg.exe";
 console.log("Port:", PORT);
 console.log("FFmpeg path:", FFMPEG_PATH);
 const __filename = fileURLToPath(import.meta.url);
